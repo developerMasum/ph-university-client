@@ -1,58 +1,38 @@
-import {
-    createBrowserRouter,
-  } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import About from "../pages/About";
-import Contact from "../pages/Contact";
 import Login from "../pages/Login";
 import SignUp from "../pages/SignUp";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import CreateStudent from "../pages/admin/CreateStudent";
 
-  
+import { adminRoutes } from "./admin.routes";
+
 const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <App />,
-      children:[
-        {
-            path: "about",
-            element: <About />,
-          },
-          {
-            path: "contact",
-            element: <Contact />,
-          },
-      ]
-    },
-    {
-      path: "/admin",
-      element: <App />,
-      children:[
-        {
-           
-            index:true,
-            element: <AdminDashboard />,
-          },
-        {
-           
-            path:'dashboard',
-            element: <AdminDashboard />,
-          },
-          {
-            path: "create-student",
-            element: <CreateStudent />,
-          },
-      ]
-    },
-   
-    {
-      path: "/login",
-      element: <Login />,
-    },
-    {
-      path: "/register",
-      element: <SignUp />,
-    },
-  ]);
-  export default router;
+  {
+    path: "/",
+    element: <App />,
+  },
+  {
+    path: "/admin",
+    element: <App />,
+    children: adminRoutes
+  },
+  {
+    path: "/faculty",
+    element: <App />,
+    children: adminRoutes
+  },
+  {
+    path: "/student",
+    element: <App />,
+    children: adminRoutes
+  },
+
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <SignUp />,
+  },
+]);
+export default router;
