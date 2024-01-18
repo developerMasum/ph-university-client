@@ -28,10 +28,7 @@ import { NavLink } from "react-router-dom";
 //   },
 // ];
 
-type TRoute={
-  path:string,
-  element: ReactNode
-}
+
 
 
 export const AdminPaths = [
@@ -63,25 +60,25 @@ export const AdminPaths = [
 ];
 
 
-export const adminRoutes = AdminPaths.reduce((acc:TRoute[], item) => {
-  if (item.path && item.element) {
-    acc.push({
-      path: item.path,
-      element: item.element
-    });
-  }
-  if (item.children) {
-    item.children.forEach(child => {
-      if (child.path && child.element) {
-        acc.push({
-          path: child.path,
-          element: child.element
-        });
-      }
-    });
-  }
-  return acc;
-}, []);
+// export const adminRoutes = AdminPaths.reduce((acc:TRoute[], item) => {
+//   if (item.path && item.element) {
+//     acc.push({
+//       path: item.path,
+//       element: item.element
+//     });
+//   }
+//   if (item.children) {
+//     item.children.forEach(child => {
+//       if (child.path && child.element) {
+//         acc.push({
+//           path: child.path,
+//           element: child.element
+//         });
+//       }
+//     });
+//   }
+//   return acc;
+// }, []);
 
 type TSidebarItem={
   key:string,
