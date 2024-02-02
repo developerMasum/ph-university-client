@@ -1,84 +1,58 @@
-import { Button } from "antd";
-import React from "react";
-import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
-import { useLoginMutation } from "../routes/features/auth/authApi";
-import { useAppDispatch } from "../routes/features/hooks";
-import { TUser, setUser } from "../routes/features/auth/authSlice";
-import { verifyToken } from "../utils/verifyToken";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { Button, Row } from 'antd';
+import { FieldValues } from 'react-hook-form';
+import { useLoginMutation } from '../redux/features/auth/authApi';
+import { useAppDispatch } from '../redux/hooks';
+import { TUser, setUser } from '../redux/features/auth/authSlice';
+import { verifyToken } from '../utils/verifyToken';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import PHForm from '../components/form/PHForm';
+import PHInput from '../components/form/PHInput';
 
-interface LoginFormValues {
-  id: string;
-  password: string;
-}
-
-const Login: React.FC = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormValues>({
-    defaultValues: {
-      id: "A-0002",
-      password: "admin123",
-    },
-  });
-
-  const dispatch = useAppDispatch();
+const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  // const { register, handleSubmit } = useForm({
+  //   defaultValues: {
+  //     userId: 'A-0002',
+  //     password: 'admin123',
+  //   },
+  // });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const defaultValues = {
+    userId: 'A-0002',
+    password: 'admin123',
+  };
+
   const [login] = useLoginMutation();
-  // console.log("data", data, error);
 
-  const onSubmit: SubmitHandler<LoginFormValues> = async (
-    userInfo: FieldValues
-  ) => {
+  const onSubmit = async (data: FieldValues) => {
+    console.log(data);
+    const toastId = toast.loading('Logging in');
+
     try {
-      // Replace the following log with your actual authentication logic
-      // console.log("Login data:", data);
-      toast.loading("Logging in...");
-
+      const userInfo = {
+        id: data.userId,
+        password: data.password,
+      };
       const res = await login(userInfo).unwrap();
       const user = verifyToken(res.data.accessToken) as TUser;
       dispatch(setUser({ user: user, token: res.data.accessToken }));
-      toast.success("Successfully logged in");
+      toast.success('Logged in', { id: toastId, duration: 2000 });
       navigate(`/${user.role}/dashboard`);
-      console.log("user", user);
-    } catch (error) {
-      // Handle errors here
-      console.error("An error occurred during login:", error);
-      toast.error("Login failed. Please try again.");
-      // Additional error handling if needed
-    } finally {
-      // You can perform cleanup or finalization here, if needed
-      toast.dismiss();
+    } catch (err) {
+      toast.error('Something went wrong', { id: toastId, duration: 2000 });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label htmlFor="id">ID:</label>
-        <input
-          type="text"
-          {...register("id", { required: "ID is required" })}
-        />
-        <p>{errors.id?.message}</p>
-      </div>
-
-      <div>
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          {...register("password", { required: "Password is required" })}
-        />
-        <p>{errors.password?.message}</p>
-      </div>
-
-      <Button htmlType="submit">Login </Button>
-    </form>
+    <Row justify="center" align="middle" style={{ height: '100vh' }}>
+      <PHForm onSubmit={onSubmit} defaultValues={defaultValues}>
+        <PHInput type="text" name="userId" label="ID:" />
+        <PHInput type="text" name="password" label="Password" />
+        <Button htmlType="submit">Login</Button>
+      </PHForm>
+    </Row>
   );
 };
 
