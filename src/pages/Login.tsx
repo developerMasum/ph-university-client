@@ -1,10 +1,12 @@
 import { Button } from "antd";
 import React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import { useLoginMutation } from "../routes/features/auth/authApi";
 import { useAppDispatch } from "../routes/features/hooks";
-import { setUser } from "../routes/features/auth/authSlice";
+import { TUser, setUser } from "../routes/features/auth/authSlice";
 import { verifyToken } from "../utils/verifyToken";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface LoginFormValues {
   id: string;
@@ -23,20 +25,36 @@ const Login: React.FC = () => {
     },
   });
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [login, { error }] = useLoginMutation();
+  const [login] = useLoginMutation();
   // console.log("data", data, error);
 
-  const onSubmit: SubmitHandler<LoginFormValues> = async (userInfo) => {
-    // Replace the following log with your actual authentication logic
-    // console.log("Login data:", data);
+  const onSubmit: SubmitHandler<LoginFormValues> = async (
+    userInfo: FieldValues
+  ) => {
+    try {
+      // Replace the following log with your actual authentication logic
+      // console.log("Login data:", data);
+      toast.loading("Logging in...");
 
-    const res = await login(userInfo).unwrap();
-    const user = verifyToken(res.data.accessToken)
-    dispatch(setUser({user: user,token:res.data.accessToken}))
-    console.log('user',user);
+      const res = await login(userInfo).unwrap();
+      const user = verifyToken(res.data.accessToken) as TUser;
+      dispatch(setUser({ user: user, token: res.data.accessToken }));
+      toast.success("Successfully logged in");
+      navigate(`/${user.role}/dashboard`);
+      console.log("user", user);
+    } catch (error) {
+      // Handle errors here
+      console.error("An error occurred during login:", error);
+      toast.error("Login failed. Please try again.");
+      // Additional error handling if needed
+    } finally {
+      // You can perform cleanup or finalization here, if needed
+      toast.dismiss();
+    }
   };
 
   return (

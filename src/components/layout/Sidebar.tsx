@@ -2,6 +2,8 @@ import { Layout, Menu } from "antd";
 import { sidebarItemGenerator } from "../../utils/sidebarItemGenerator";
 import { AdminPaths } from "../../routes/admin.routes";
 import { FacultyPaths } from "../../routes/faulty.routes";
+import { useAppSelector } from "../../routes/features/hooks";
+import { selectCurrentUser } from "../../routes/features/auth/authSlice";
 const { Sider } = Layout;
 
 const Sidebar = () => {
@@ -11,11 +13,12 @@ const Sidebar = () => {
     FACULTY: "faculty",
     STUDENT: "student",
   };
-  const role = "faculty";
+  // const role = "faculty";
+  const user = useAppSelector(selectCurrentUser)
   let sidebarItems;
   // console.log(sidebarItems);
 
-  switch (role) {
+  switch (user!.role) {
     case userRole.ADMIN:
      sidebarItems =  sidebarItemGenerator(AdminPaths, userRole.ADMIN);
      break;
